@@ -1,0 +1,26 @@
+sudo: required
+services:
+    - docker
+
+before_install:
+    - docker build -t react-test -f ./client/Dockerfile.dev ./client
+
+scripts:
+    - docker run react-test npm test -- --coverage
+    
+after_success:
+    - docker build -t multi-client ./client
+    - docker build -t multi-nginx ./nginx
+    - docker build -t multi-server ./server
+    - docker build -t multi-worker ./worker
+
+    ### Following section demonstrate how to push changes to Docker Hub
+    ### 1. Login to Docker Hub 
+    ###      (DOCKER_ID & DOCKER_PASSWORD mentioned below are the environment variables added to the Travis CI)
+    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    ### 2. Push the images
+    - docker push multi-client
+    - docker push multi-nginx
+    - docker push multi-server
+    - docker push multi-worker
+

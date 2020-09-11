@@ -1,0 +1,22 @@
+version: '3'
+services:
+    postgres:
+        image: 'postgres:latest'
+        POSTGRES_PASSWORD: 'postgres_password'
+    redis:
+        image: 'redis:latest'
+    server:
+        build:
+            dockerfile: Dockerfile.dev
+            context: ./server
+        volumes: 
+            - /app/node_modules
+            - ./server:/app    
+        environment: 
+            - REDIS_HOST=redis                  # Mention the name of the redis service here
+            - REDIS_PORT=6379                   # This is the default Redis port
+            - PGUSER=postgres                   # Default postgres username
+            - PGHOST=postgres                   # Name of the postgres service created above
+            - PGDATABASE=postgres               # Default postgres database name
+            - PGPASSWORD=postgres_password      # Default postgres password
+            - PGPORT=5432                       # Default postgres port
